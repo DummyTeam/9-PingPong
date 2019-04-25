@@ -1,0 +1,190 @@
+<!DOCTYPE HTML>
+
+<html>
+
+<head>
+    <style>
+        * {
+            margin: 0px;
+            padding: 0px;
+            border: 0px;
+        }
+        
+        .background {
+            margin: auto;
+            margin-top: 30px;
+            height: 600px;
+            width: 800px;
+            background-color: #283032;
+            position: relative;
+            display: block;
+            border-top: 5px solid #aeaeae;
+            border-bottom: 5px solid #aeaeae;
+        }
+        
+        .player {
+            position: absolute;
+            height: 80px;
+            width: 10px;
+            background-color: white;
+            margin: 1px;
+            display: inline-block;
+        }
+        
+        .player1 {
+            background-color: white;
+            margin: 1px;
+            display: inline-block;
+        }
+        
+        .player2 {
+            left: 788px;
+            background-color: white;
+            margin: 1px;
+            display: inline-block;
+        }
+        
+        .ball {
+            position: absolute;
+            width: 20px;
+            left: 30px;
+            height: 20px;
+            background-color: white;
+            display: inline-block;
+            border-radius: 10px;
+            top: 0px;
+            left: 0px;
+        }
+        
+        #gameover {
+            display: none;
+            font-family: Arial;
+            font-size: 210px;
+            text-align: center;
+            width: 800px;
+            color: #d83e3e;
+        }
+        
+        #score {
+            display: block;
+            font-family: Arial;
+            font-size: 30px;
+            text-align: center;
+            width: 800px;
+            color: #25cc13;
+        }
+    </style>
+</head>
+
+<body id="game">
+    <div class="background">
+		<p id="score"></p>
+        <p id="gameover"></p>
+		
+        <div class="player player1" id="p1">
+        </div>
+        <div class="ball" id="ball">
+
+        </div>
+        <div class="player player2" id="p2">
+        </div>
+    </div>
+
+    <script>
+         function GameObject(element)
+         {
+             this.obj = element;
+             this.x_pos = 0;
+             this.y_pos = 0;
+             this.x_speed = 0;
+             this.y_speed = 0;
+
+             this.updateElement = function()
+             {
+                 this.obj.style.top = this.y_pos.toString() + "px";
+                 this.obj.style.left = this.x_pos.toString() + "px";
+             }
+         }
+
+        var difficulty = 3;
+        var score = 0;
+        var p1 = new GameObject(document.getElementById("p1"));
+        var p2 = new GameObject(document.getElementById("p2"));
+        var ball = new GameObject(document.getElementById("ball"));
+
+        function Update()
+        {
+            p1.updateElement();
+            p2.updateElement();
+            ball.updateElement();
+        }
+
+         function Setup()
+         {
+            p2.x_pos = 788;
+
+            ball.x_speed = 4;
+            ball.y_speed = 2;
+
+            ball.x_pos = Math.floor((Math.random() * 1000) + 1)%750 + 1;
+            ball.y_pos = Math.floor((Math.random() * 1000) + 1)%550 + 1;;
+            document.getElementById("score").innerHTML = "Score: " + score.toString();
+
+            onmousemove = function(e)
+            {
+                p1.y_pos = e.clientY-40;
+                
+                if(p1.y_pos < 10 ) p1.y_pos = 10;
+                if(p1.y_pos > 530 ) p1.y_pos = 530; 
+
+                 p1.y_pos = (p1.y_pos-10); 
+                 //Update();
+            }
+            //Update();
+         }
+
+         function Loop()
+         {
+
+                ball.x_pos += ball.x_speed; 
+                ball.y_pos += ball.y_speed; 
+
+                if(ball.x_pos > 800 ) ball.x_pos = 800;
+                if(ball.y_pos > 800 ) ball.y_pos = 800;
+
+                
+                if( (ball.x_pos > 768 && ( ball.y_pos < p2.y_pos+82 && ball.y_pos > p2.y_pos-2 )) ||
+                    (ball.x_pos < 12 &&  ( ball.y_pos <= p1.y_pos+82 && ball.y_pos > p1.y_pos-2 ))     ){
+                    ball.x_speed *= -1;
+                }
+                
+
+                if( (ball.y_pos <= 3 || ball.y_pos >= 580) && (ball.x_pos < 768) && (ball.x_pos > 12) )
+                {
+                    ball.y_speed *= -1;
+                    score += 10;
+                    document.getElementById("score").innerHTML = "Score: " + score.toString();
+                }
+
+
+                if( ball.x_pos < 1 )
+                {                    
+                    document.getElementById("gameover").style.display = "block";
+                    document.getElementById("gameover").innerHTML = "Game Over!";
+                    return 0;
+                }
+
+                p2.y_pos = ball.y_pos;
+                p2.y_pos = (p2.y_pos-20);
+                Update();
+                
+                setTimeout('Loop()', difficulty);
+         }
+
+         Setup();
+         Loop();
+
+    </script>
+</body>
+
+</html>
